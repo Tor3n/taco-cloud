@@ -1,4 +1,4 @@
-package taco.taco_cloud;
+package taco.taco_cloud.components;
 
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
@@ -8,10 +8,16 @@ import org.hibernate.validator.constraints.CreditCardNumber;
 import taco.taco_cloud.components.Taco;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
 public class TacoOrder {
+
+    private long id;
+
+    private Date createdAt = new Date();
+
     @NotBlank(message="Delivery name is required")
     private String deliveryName;
 
