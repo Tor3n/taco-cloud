@@ -3,6 +3,7 @@ package taco.taco_cloud.controllers;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -11,9 +12,11 @@ import taco.taco_cloud.components.TacoOrder;
 import taco.taco_cloud.components.Ingredient;
 import taco.taco_cloud.components.Ingredient.*;
 import taco.taco_cloud.components.Taco;
+import taco.taco_cloud.persistance.IngredientRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -22,7 +25,7 @@ import java.util.stream.Collectors;
 @SessionAttributes("tacoOrder")
 public class DesignTacoController {
 
-    @ModelAttribute
+    /* @ModelAttribute
     public void addIngredientsToModel(Model model){
         List<Ingredient> ingredients = Arrays.asList(
                 new Ingredient("FLTO", "Flour Tortilla", Type.WRAP),
@@ -39,6 +42,22 @@ public class DesignTacoController {
 
         Type[] types = Ingredient.Type.values();
         for (Type type: types){
+            model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
+        }
+    } */
+
+    private final IngredientRepository ingredientRepo;
+
+    @Autowired
+    public DesignTacoController(IngredientRepository ingredientRepo){
+        this.ingredientRepo = ingredientRepo;
+    }
+
+    @ModelAttribute
+    public void addIngredientsToModel(Model model){
+        List<Ingredient> ingredients = (List<Ingredient>) ingredientRepo.findAll();
+        Type[] types = Ingredient.Type.values();
+        for(Type type: types){
             model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
         }
     }
@@ -63,6 +82,7 @@ public class DesignTacoController {
         if(errors.hasErrors()){
             return "design";
         }
+        //converter here
         tacoOrder.addTaco(taco);
         log.info("Processing taco: {}", taco);
         return "redirect:/orders/current";
